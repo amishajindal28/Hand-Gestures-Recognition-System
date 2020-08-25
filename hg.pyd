@@ -1,0 +1,49 @@
+import cv2 # python interface, wraps the c++ api, and uses numpy arrays for images, simple and fast
+import numpy as np #importing libraries
+import matplotlib.pyplot as plt
+cap=cv2.VideoCapture(0) #creating camera object; capture live stream; 0 is Device index, for one camera device index 0(or-1)
+while( cap.isOpened() ) :
+	ret,img = cap.read()                         #reading the frames
+	imcopy = img.copy
+	cv2.imshow('video',img)                  #displaying the frames
+	#k = cv2.waitKey(10)
+	#if k == 27:
+	#	break
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+       	 break
+	gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+	blur=cv2.GaussianBlur(gray,(5,5),0)
+	ret,thresh1=cv2.threshold(blur,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+	
+	plt.subplot(231),plt.imshow(thresh1,'gray')
+	plt.show()
+	_,contours, _ = cv2.findContours(thresh1,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	max_area=0
+	for i in range(len(contours)):
+            cnt=contours[i]
+            area = cv2.contourArea(cnt)
+	   
+            if(area>max_area):
+                max_area=area
+                ci=i
+  	cnt=contours[ci]
+        hull = cv2.convexHull(cnt)
+	drawing = np.zeros(img.shape,np.uint8)
+	cv2.drawContours(drawing,[cnt],0,(0,255,0),3)
+	cv2.imshow('draw contours',drawing)
+	cv2.drawContours(drawing,[hull],0,(0,0,255),2)
+	cv2.imshow('draw contours',drawing)
+	hull2 = cv2.convexHull(cnt,returnPoints = False)
+        defects = cv2.convexityDefects(cnt,hull2)
+	for i in range(defects.shape[0]):
+    		s,e,f,d = defects[i,0]
+    		start = tuple(cnt[s][0])
+    		end = tuple(cnt[e][0])
+    		far = tuple(cnt[f][0])
+    		cv2.line(drawing,start,end,[0,255,0],2)
+    		cv2.circle(drawing,far,5,[0,0,255],-1)
+
+	cv2.imshow('img',drawing)
+
+cap.release()
+cv2.destroyAllWindows()

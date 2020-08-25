@@ -1,0 +1,13 @@
+4) Now copy everything in the folder C:\opencv\build\python\x86\2.7\ ( most probably, there will be only one file cv2.pyd ) and paste it in the folder C:\Python27\Lib\site-packages\
+
+
+5) Now open your "Python IDLE" ( from Start > All Programmes > Python 2.7 > Python IDLE ) and just type following :
+import cv2
+
+
+If everything OK, it will import cv2 module, otherwise an error message will be shown.
+
+so i have installed:
+1. python 2.7.14
+2. opencv
+3. numpy 1.9.
